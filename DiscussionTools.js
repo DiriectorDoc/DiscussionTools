@@ -19,15 +19,9 @@ var customizeToolbar = function(){
 		],
 		[],
 		(function(){
-			var tem = Forms.getOpenTemplate();
-			let content = "{{subst:" + "Discussion top";
-			var fieldname = tem.basic[0].field;
-			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-			if (field) {
-				content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-			}
+			let result = Forms.getCompletedForm().all.result;
 			return {
-				pre: content+"\n}}\n",
+				pre: "{{subst:" + "Discussion top" + (result ? "|" + result:"") + "}}",
 				post: '\n{{subst:' + 'Discussion bottom}}'
 			};
 		})
@@ -41,17 +35,12 @@ var customizeToolbar = function(){
 			],
 			[],
 			(function(){
-				var fields = Forms.getCompletedForm().all;
-				let content = "{{subst:" + short + "}}\n";
-				console.log(fields);
-				if(fields.result || fields.status){
-					content = "{{subst:" + short +
-								(fields.result ? "\n| result = " + fields.result:"") +
-								(fields.status ? "\n| status = " + fields.status:"") +
-								"\n}}\n"
-				}
+				let fields = Forms.getCompletedForm().all;
 				return {
-					pre: content,
+					pre: "{{subst:" + short +
+								(fields.result ? " |result = " + fields.result:"") +
+								(fields.status ? " |status = " + fields.status:"") +
+								"}}\n",
 					post: '\n{{subst:' + 'abot}}'
 				};
 			})
@@ -69,17 +58,12 @@ var customizeToolbar = function(){
 		],
 		[],
 		(function(){
-			var tem = Forms.getOpenTemplate();
-			let content = "{{subst:" + "pot";
-			for(var i = 0; i < tem.basic.length; i++) {
-	  			var fieldname = tem.basic[i].field;
-				var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-				if (field) {
-					content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-				}
-			}
+			let fields = Forms.getCompletedForm().all;
 			return {
-				pre: content+"\n}}\n",
+				pre: "{{subst:" + "pot" +
+							(fields.result ? " |result = " + fields.result:"") +
+							(fields.type ? " |type = " + fields.type:"") +
+							"}}\n",
 				post: '\n{{subst:' + 'pob}}'
 			};
 		})
@@ -93,74 +77,50 @@ var customizeToolbar = function(){
 		],
 		[],
 		(function(){
-			var tem = Forms.getOpenTemplate();
-			let content = "{{subst:" + "RM top";
-			for(var i = 0; i < tem.basic.length; i++) {
-	  			var fieldname = tem.basic[i].field;
-				var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-				if (field) {
-					content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-					if(i == 2)
-						break;
-				}
-			}
+			let fields = Forms.getCompletedForm().all;
 			return {
-				pre: content+"\n}}\n",
+				pre: "{{subst:" + "RM top" +
+							(fields.result ? " |result = " + fields.result:"") +
+							(fields.nac ? " |nac = " + fields.nac:(fields.pmc ? " |pmc = " + fields.pmc:"")) +
+							"}}\n",
 				post: '\n{{subst:' + 'RM bottom}}'
 			};
 		})
 		);
 		
-		new dialogBox("Closed rfc", "rfc",
+		new dialogBox("Closed rfc top", "rfc",
 		[
 		{"field": "Reason"}
 		],
 		[],
 		(function(){
-			var tem = Forms.getOpenTemplate();
-			let content = "{{rfc top";
-			var fieldname = tem.basic[0].field;
-			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-			if (field) {
-				content += "|" + field;
-			}
+			let result = Forms.getCompletedForm().all.result;
 			return {
-				pre: content+"}}\n",
-				post: '\n{{rfc bottom}}'
+				pre: "{{subst:" + "closed rfc top" + (result ? "|" + result:"") + "}}",
+				post: '\n{{subst:' + 'closed rfc bottom}}'
 			};
 		})
 		);
 		
 		new dialogBox("Collapse", "col",
 		[
-		{"field": "Title"},
-		{"field": "Status", "tooltip": "status-tooltip"}
+		{"field": "Title"}
 		],
 		[
 		{"field": "Warning", "tooltip": "col-warning-tooltip"},
-		{"field": "Collapse", "tooltip": "col-collapse-tooltip"}
+		{"field": "Collapsed", "tooltip": "col-collapse-tooltip"}
 		],
 		(function(){
-			var tem = Forms.getOpenTemplate();
 			let content = "{{Collapse top";
-			var fieldname,
-				field;
-			for(var i = 0; i < tem.basic.length; i++) {
-	  			fieldname = tem.basic[i].field;
-				field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-				if (field) {
-					content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-				}
-			}
-			for(var i = 0; i < tem.extra.length; i++) {
-				fieldname = tem.extra[i].field;
-				field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-				if (field) {
-    				content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-				}
+			let fields = Forms.getCompletedForm();
+			if(!jQuery.isEmptyObject(fields.all)){
+				content += (fields.basic.title ? "\n| result = " + fields.basic.title:"");
+				content += (fields.extra.warning ? "\n| warning = yes":"");
+				content += (fields.extra.collapsed ? "\n| collapse = yes":"");
+				content += "\n";
 			}
 			return {
-				pre: content+"\n}}\n",
+				pre: content + "}}\n",
 				post: '\n{{Collapse bottom}}'
 			};
 		})
@@ -168,31 +128,28 @@ var customizeToolbar = function(){
 		
 		new dialogBox("Hidden", "hat",
 		[
-		{"field": "Reason"},
-		{"field": "Closer"},
+		{"field": "Reason", "tooltip": "hat-sign-tooltip"},
+		{"field": "Closer", "tooltip": "hat-closer-tooltip"},
 		{"field": "Collapse", "tooltip": "col-collapse-tooltip"}
 		],
 		[],
 		(function(){
-			var tem = Forms.getOpenTemplate();
-			let content = "{{Hidden archive top";
-			var fieldname,
-				field;
-			for(var i = 0; i < tem.basic.length; i++) {
-	  			fieldname = tem.basic[i].field;
-				field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
-				if (field) {
-					content += "\n| " + fieldname.toLocaleLowerCase() + " = " + field;
-				}
+			let content = "{{Collapse top";
+			let fields = Forms.getCompletedForm().all;
+			if(!jQuery.isEmptyObject(fields)){
+				content += (fields.reason ? "\n| reason = " + fields.reason:"");
+				content += (fields.closer ? "\n| closer = " + fields.basic.status:"");
+				content += (fields.collapsed ? "\n| collapse = yes":"");
+				content += "\n";
 			}
 			return {
-				pre: content+"\n}}\n",
-				post: '\n{{Hidden archive bottom}}'
+				pre: content + "}}\n",
+				post: '\n{{Collapse bottom}}'
 			};
 		})
 		);
 		
-		//Now that I have designed the dialog box, I need to turn it into an availible module
+		//Now that I have designed the dialog boxs, I need to turn them into availible modules
 		Forms.init();
 	} catch(e) {
 		//This reloads the script after 500ms in order to correctly grab window.Forms when it loads
@@ -511,8 +468,10 @@ var customizeToolbar = function(){
 		"poll-type-tooltip": "Used when it is not a move proposal",
 		"nac-tooltip": 'Set to "yes" to indicate a non-admin closure (overrides PMC)',
 		"pmc-tooltip": 'Set to "yes" to indicate a page mover closure',
-		"col-warning-tooltip": 'Set to "no" to remove the "Do not modify" warning',
-		"col-collapse-tooltip": 'Set to "no" to have content be shown on page load.',
+		"col-warning-tooltip": 'Inputing anything will add the "Do not modify" warning',
+		"col-collapse-tooltip": 'Inputing anything will set the default state to "collapsed"',
+		"hat-sign-tooltip": 'Be sure to sign closure statement (~~' + '~~), else use the |closer= parameter',
+		"hat-closer-tooltip": "Name of user who closed discussion, not a signature",
 		"wikieditor-toolbar-tool-atop-title": "Archive Top",
 		"wikieditor-toolbar-tool-atopr-title": "Archive Top (Red)",
 		"wikieditor-toolbar-tool-atopg-title": "Archive Top (Green)",
