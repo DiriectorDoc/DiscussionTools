@@ -18,8 +18,59 @@ var Forms = {
     		div.find(".cite-form-status").val('closed');
     		div.find('.cite-extra-fields').hide();
 		}
-	} 
+	},
+	getCompletedForm: function(){
+		let object = {
+			all: {},
+			basic: {},
+			extra: {},
+			incr: {}
+		};
+		var tem = Forms.getOpenTemplate();
+		console.log(tem);
+		for(var i in tem.basic){
+			if (tem.basic[i].increment_group) {
+        		continue;
+    		}
+			var fieldname = tem.basic[i].field;
+			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
+			if (field) {
+				object.all[fieldname.toLocaleLowerCase()] = field;
+				object.basic[fieldname.toLocaleLowerCase()] = field;
+			}
+		}
+		for(var i in tem.extra){
+			if (tem.extra[i].increment_group) {
+        		continue;
+    		}
+			var fieldname = tem.extra[i].field;
+			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
+			if (field) {
+				object.all[fieldname.toLocaleLowerCase()] = field;
+				object.extra[fieldname.toLocaleLowerCase()] = field;
+			}
+		}
+		for(var e in tem.incrementables){
+			for(var i = 1; i <= tem.incrementables[e].val; i++)
+				for(var j in tem.incrementables[e].fields){
+					var fieldname = j.field;
+					var fieldid = fieldname.replace('<N>', i.toString());
+					var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldid).val());
+					if (field) {
+						object.all[fieldid.toLocaleLowerCase()] = field;
+						object.incr[fieldid.toLocaleLowerCase()] = field;
+					}
+				}
+		}
+		return object;
+	}
 };
+
+const types = [
+	null,
+	null,
+	"checkbox"
+	]
 
 /* The following variable has been addapted from [[MediaWiki:Gadget-refToolbarBase.js]] */
 var dialogBox = function(templatename, shortform, basicfields, expandedfields, encapsulateOpts) {
@@ -44,6 +95,7 @@ var dialogBox = function(templatename, shortform, basicfields, expandedfields, e
 			var fieldobj = fields[i];
 			var field = labelfield = fieldobj.field;
 			var ad = false;
+			var check = fieldobj.type === "checkbox" || types[fieldobj.type] === "checkbox";
 			if (incrsetup && fieldobj.increment_group) {
 				field = fieldobj.field.replace('<N>', '1');
 				labelfield = fieldobj.field.replace('<N>', '');
@@ -157,7 +209,9 @@ var dialogBox = function(templatename, shortform, basicfields, expandedfields, e
 			var tooltip = fieldobj.tooltip ? $('<abbr />').attr('title', mw.usability.getMsg(fieldobj.tooltip)).html('<sup>?</sup>') : false;
 
 			var input = '';
-			if (ad) {
+			if (check) {
+				input = $('<input type="checkbox" ' + (fieldobj.checked ? 'checked':'') + '/>');
+			} else if (ad) {
 				input = $('<input tabindex="1" style="width:85%" type="text" />');
 			} else {
 				input = $('<input tabindex="1" style="width:100%" type="text" />');
