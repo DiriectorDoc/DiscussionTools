@@ -26,31 +26,38 @@ var Forms = {
 			extra: {},
 			incr: {}
 		};
-		var tem = Forms.getOpenTemplate();
-		console.log(tem);
+		let tem = Forms.getOpenTemplate();
 		for(var i in tem.basic){
-			if (tem.basic[i].increment_group) {
+			let e = tem.basic[i];
+			if (e.increment_group) {
         		continue;
     		}
-			var fieldname = tem.basic[i].field;
+			var fieldname = e.field;
+			if(e.type === "checkbox" || types[e.type] === "checkbox"){
+				object.basic[fieldname.toLocaleLowerCase()] = object.all[fieldname.toLocaleLowerCase()] = $('#form-col-Warning').is(':checked');
+				continue;
+			}
 			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
 			if (field) {
-				object.all[fieldname.toLocaleLowerCase()] = field;
-				object.basic[fieldname.toLocaleLowerCase()] = field;
+				object.basic[fieldname.toLocaleLowerCase()] = object.all[fieldname.toLocaleLowerCase()] = field;
 			}
 		}
 		for(var i in tem.extra){
-			if (tem.extra[i].increment_group) {
+			let e = tem.extra[i];
+			if (e.increment_group) {
         		continue;
     		}
-			var fieldname = tem.extra[i].field;
+			var fieldname = e.field;
+			if(e.type === "checkbox" || types[e.type] === "checkbox"){
+				object.extra[fieldname.toLocaleLowerCase()] = object.all[fieldname.toLocaleLowerCase()] = $('#form-col-Warning').is(':checked');
+				continue;
+			}
 			var field = $.trim($('#form-'+Forms.escStr(tem.shortform)+'-'+fieldname).val());
 			if (field) {
-				object.all[fieldname.toLocaleLowerCase()] = field;
-				object.extra[fieldname.toLocaleLowerCase()] = field;
+				object.extra[fieldname.toLocaleLowerCase()] = object.all[fieldname.toLocaleLowerCase()] = field;
 			}
 		}
-		for(var e in tem.incrementables){
+		/*for(var e in tem.incrementables){
 			for(var i = 1; i <= tem.incrementables[e].val; i++)
 				for(var j in tem.incrementables[e].fields){
 					var fieldname = j.field;
@@ -61,7 +68,7 @@ var Forms = {
 						object.incr[fieldid.toLocaleLowerCase()] = field;
 					}
 				}
-		}
+		}*/
 		return object;
 	}
 };
