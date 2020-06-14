@@ -72,8 +72,8 @@ var customizeToolbar = function(){
 		new dialogBox("RM", "rm",
 		[
 		{"field": "Result"},
-		{"field": "NAC", "tooltip": "nac-tooltip"},
-		{"field": "PMC", "tooltip": "pmc-tooltip"}
+		{"field": "NAC", "tooltip": "nac-tooltip", "type":2},
+		{"field": "PMC", "tooltip": "pmc-tooltip", "type":2}
 		],
 		[],
 		(function(){
@@ -81,7 +81,7 @@ var customizeToolbar = function(){
 			return {
 				pre: "{{subst:" + "RM top" +
 							(fields.result ? " |result = " + fields.result:"") +
-							(fields.nac ? " |nac = " + fields.nac:(fields.pmc ? " |pmc = " + fields.pmc:"")) +
+							(fields.nac ? " |nac = yes":(fields.pmc ? " |pmc = yes":"")) +
 							"}}\n",
 				post: '\n{{subst:' + 'RM bottom}}'
 			};
@@ -107,8 +107,8 @@ var customizeToolbar = function(){
 		{"field": "Title"}
 		],
 		[
-		{"field": "Warning", "tooltip": "col-warning-tooltip"},
-		{"field": "Collapsed", "tooltip": "col-collapse-tooltip"}
+		{"field": "Warning", "tooltip": "col-warning-tooltip", "type":2},
+		{"field": "Collapsed", "tooltip": "col-collapse-tooltip", "type":2}
 		],
 		(function(){
 			let content = "{{Collapse top";
@@ -466,10 +466,10 @@ var customizeToolbar = function(){
 	mw.usability.addMessages({
 		"status-tooltip": "Possible values: resolved, withdrawn, moved, or none",
 		"poll-type-tooltip": "Used when it is not a move proposal",
-		"nac-tooltip": 'Set to "yes" to indicate a non-admin closure (overrides PMC)',
-		"pmc-tooltip": 'Set to "yes" to indicate a page mover closure',
-		"col-warning-tooltip": 'Inputing anything will add the "Do not modify" warning',
-		"col-collapse-tooltip": 'Inputing anything will set the default state to "collapsed"',
+		"nac-tooltip": 'Indicates a non-admin closure (overrides PMC)',
+		"pmc-tooltip": 'Indicates a page mover closure',
+		"col-warning-tooltip": 'Cheching this will add the "Do not modify" warning',
+		"col-collapse-tooltip": 'Cheching this will set the default state to "collapsed"',
 		"hat-sign-tooltip": 'Be sure to sign closure statement (~~' + '~~), else use the |closer= parameter',
 		"hat-closer-tooltip": "Name of user who closed discussion, not a signature",
 		"wikieditor-toolbar-tool-atop-title": "Archive Top",
